@@ -51,6 +51,7 @@
     "@heroui/user": "2.2.22",
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.28",
+    "cloudinary": "^2.8.0",
     "clsx": "2.1.1",
     "firebase": "^12.5.0",
     "framer-motion": "11.18.2",
