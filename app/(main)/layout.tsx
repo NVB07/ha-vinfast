@@ -7,6 +7,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontRaleway } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
     title: {
@@ -35,9 +36,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <head />
             <body className={clsx("min-h-screen text-foreground bg-background font-sans antialiased", fontRaleway.variable)}>
                 <Providers>
-                    <div className="relative flex flex-col h-screen">
+                    <div className="relative flex flex-col min-h-screen">
                         <Navbar />
-                        <main className="">{children}</main>
+                        <main className="pt-16 sm:pt-16 flex-1">{children}</main>
+                        <Footer />
                     </div>
                 </Providers>
             </body>

@@ -344,7 +344,7 @@ export function CarManagement() {
             </Card>
 
             {/* 添加/编辑模态框 */}
-            <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
+            <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside" isDismissable={false}>
                 <ModalContent>
                     <ModalHeader>{isEditing ? "Chỉnh sửa xe" : "Thêm xe"}</ModalHeader>
                     <ModalBody>

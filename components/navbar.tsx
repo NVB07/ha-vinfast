@@ -20,7 +20,7 @@ export const Navbar = () => {
     );
 
     return (
-        <HeroUINavbar className="bg-black" maxWidth="2xl" position="sticky">
+        <HeroUINavbar className="bg-black fixed top-0 left-0 right-0 z-50" maxWidth="2xl" position="static">
             {/* Logo - 移动端左侧，桌面端居中 */}
             <NavbarBrand as="li" className="gap-3 max-w-fit lg:absolute lg:left-1/2 lg:-translate-x-1/2">
                 <NextLink className="flex justify-start items-center gap-1 flex-col" href="/">
