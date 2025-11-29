@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import Slider from "react-slick";
 import { CarData } from "@/types";
 import { BannerData } from "@/lib/firebase-data";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
+import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
+import { Textarea } from "@heroui/input";
+import Image from "next/image";
 
 interface HomePageProps {
     data: BannerData | null;
@@ -12,6 +17,15 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ data, slideData, outstandingData }) => {
     const [windowWidth, setWindowWidth] = useState<number>(0);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [formData, setFormData] = useState({
+        name: "",
+        phone: "",
+        address: "",
+        message: "",
+    });
+    const [submitting, setSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
     // Detect window width
     useEffect(() => {
@@ -31,6 +45,52 @@ const HomePage: React.FC<HomePageProps> = ({ data, slideData, outstandingData })
             }
         };
     }, []);
+
+    // Auto open dialog after 5 seconds
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            onOpen();
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, [onOpen]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setSubmitStatus("idle");
+
+        try {
+            const response = await fetch("/api/contact/send", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSubmitStatus("success");
+                setFormData({ name: "", phone: "", address: "", message: "" });
+                // Close dialog after 2 seconds on success
+                setTimeout(() => {
+                    onClose();
+                    setSubmitStatus("idle");
+                }, 2000);
+            } else {
+                setSubmitStatus("error");
+                alert(data.error || "Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại.");
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            setSubmitStatus("error");
+            alert("Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     // Slick Carousel 配置
     // Tính toán slidesToShow dựa trên window width
@@ -336,6 +396,133 @@ const HomePage: React.FC<HomePageProps> = ({ data, slideData, outstandingData })
                     </div>
                 </div>
             </div>
+
+            {/* Float Button */}
+            <button
+                onClick={onOpen}
+                className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
+                aria-label="Liên hệ"
+            >
+                <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                </svg>
+            </button>
+
+            {/* Contact Dialog */}
+            <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-3 pb-4">
+                                <div className="flex items-center justify-center gap-3 mb-2">
+                                    <Image src="/logo-gif.gif" alt="VinFast Logo" width={48} height={48} unoptimized className="flex-shrink-0" />
+                                    <div className="flex flex-col">
+                                        <p className="font-bold tracking-[.25em] animate-shiny text-lg">VINFAST</p>
+                                        <p className="text-xs text-gray-500">Hanoi</p>
+                                    </div>
+                                </div>
+                                <h2 className="text-2xl font-bold text-center">Liên hệ với chúng tôi</h2>
+                                <p className="text-sm text-gray-600 font-normal text-center">Điền thông tin bên dưới và chúng tôi sẽ liên hệ lại với bạn sớm nhất</p>
+                            </ModalHeader>
+                            <ModalBody>
+                                {submitStatus === "success" && (
+                                    <div className="mb-4 p-4 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-lg">
+                                        <div className="flex items-center gap-3">
+                                            <svg
+                                                className="w-5 h-5 text-success-600 dark:text-success-400 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <p className="text-success-800 dark:text-success-200 text-sm">
+                                                Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {submitStatus === "error" && (
+                                    <div className="mb-4 p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg">
+                                        <div className="flex items-center gap-3">
+                                            <svg
+                                                className="w-5 h-5 text-danger-600 dark:text-danger-400 flex-shrink-0"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                            <p className="text-danger-800 dark:text-danger-200 text-sm">Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau.</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <Input
+                                            label="Họ và tên"
+                                            placeholder="Nhập họ và tên của bạn"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            variant="bordered"
+                                            isRequired
+                                        />
+                                        <Input
+                                            label="Số điện thoại"
+                                            type="tel"
+                                            placeholder="0123 456 789"
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            variant="bordered"
+                                            isRequired
+                                        />
+                                    </div>
+
+                                    <Input
+                                        label="Địa chỉ"
+                                        placeholder="Nhập địa chỉ của bạn"
+                                        value={formData.address}
+                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                        variant="bordered"
+                                        isRequired
+                                    />
+
+                                    <Textarea
+                                        label="Tin nhắn"
+                                        placeholder="Nhập tin nhắn của bạn..."
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                        variant="bordered"
+                                        minRows={4}
+                                        isRequired
+                                    />
+
+                                    <div className="flex gap-3 pt-2">
+                                        <Button type="submit" color="primary" className="flex-1" isLoading={submitting} disabled={submitting}>
+                                            {submitting ? "Đang gửi..." : "Gửi tin nhắn"}
+                                        </Button>
+                                        <Button variant="bordered" onPress={onClose}>
+                                            Đóng
+                                        </Button>
+                                    </div>
+                                </form>
+                            </ModalBody>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </section>
     );
 };

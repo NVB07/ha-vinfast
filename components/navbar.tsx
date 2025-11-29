@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Navbar as HeroUINavbar, NavbarContent, NavbarMenu, NavbarMenuToggle, NavbarBrand, NavbarItem, NavbarMenuItem } from "@heroui/navbar";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
@@ -12,6 +13,12 @@ import Image from "next/image";
 
 export const Navbar = () => {
     const pathname = usePathname();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Close menu when pathname changes
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
     const searchInput = (
         <div className="flex items-center gap-2 bg-[#222222] p-2 rounded-md w-full max-w-xs">
             <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
@@ -20,7 +27,7 @@ export const Navbar = () => {
     );
 
     return (
-        <HeroUINavbar className="bg-black fixed top-0 left-0 right-0 z-50" maxWidth="2xl" position="static">
+        <HeroUINavbar className="bg-black fixed top-0 left-0 right-0 z-50" maxWidth="2xl" position="static" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
             {/* Logo - 移动端左侧，桌面端居中 */}
             <NavbarBrand as="li" className="gap-3 max-w-fit lg:absolute lg:left-1/2 lg:-translate-x-1/2">
                 <NextLink className="flex justify-start items-center gap-1 flex-col" href="/">
@@ -61,21 +68,22 @@ export const Navbar = () => {
 
             {/* 移动端和中等屏幕菜单切换按钮 (< 1024px) */}
             <NavbarContent className="lg:hidden basis-1 pl-4" justify="end">
-                <NavbarMenuToggle />
+                <NavbarMenuToggle className="text-white" aria-label="Toggle menu" />
             </NavbarContent>
 
             {/* 移动端菜单 */}
-            <NavbarMenu>
+            <NavbarMenu className="bg-black">
                 <div className="w-full mb-4 px-2">{searchInput}</div>
-                <div className="mx-4 mt-2 flex flex-col gap-2">
+                <div className="w-full flex flex-col gap-2 px-4">
                     {siteConfig.navItems.map((item, index) => (
-                        <NavbarMenuItem key={`${item.href}-${index}`}>
+                        <NavbarMenuItem key={`${item.href}-${index}`} className="w-full">
                             <NextLink
                                 className={clsx(
-                                    "w-full text-lg py-2 px-3 rounded-md transition-colors",
-                                    pathname === item.href ? "text-white font-semibold bg-gray-800" : "text-gray-300 hover:text-white hover:bg-gray-800"
+                                    "w-full block text-lg py-2 px-3 rounded-md transition-colors",
+                                    pathname === item.href ? "text-white font-semibold bg-gray-800" : "text-white hover:text-gray-200 hover:bg-gray-800"
                                 )}
                                 href={item.href}
+                                onClick={() => setIsMenuOpen(false)}
                             >
                                 {item.label}
                             </NextLink>

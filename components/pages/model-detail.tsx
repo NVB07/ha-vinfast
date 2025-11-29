@@ -31,8 +31,6 @@ export function ModelDetailPage({ model }: ModelDetailPageProps) {
         slidesToScroll: 1,
         arrows: true,
         adaptiveHeight: true,
-        nextArrow: <div className="slick-arrow slick-next" />,
-        prevArrow: <div className="slick-arrow slick-prev" />,
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
