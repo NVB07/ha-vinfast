@@ -12,6 +12,7 @@ export const metadata: Metadata = {
         type: "website",
     },
 };
+export const dynamic = "force-dynamic";
 
 export default async function Models() {
     const models = await fetchAllModels();

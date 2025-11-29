@@ -1,8 +1,9 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-    name: "Vinfast Hanoi",
-    description: "Make beautiful websites regardless of your design experience.",
+    name: "Vinfast",
+    description: "Thương hiệu xe điện hàng đầu Việt Nam với công nghệ tiên tiến, thiết kế hiện đại và giá cả hợp lý.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://vinfast-hanoi.com",
     navItems: [
         {
             label: "Trang chủ",

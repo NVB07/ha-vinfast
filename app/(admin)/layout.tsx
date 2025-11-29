@@ -5,6 +5,14 @@ import { AdminLayoutWrapper } from "@/components/admin/admin-layout-wrapper";
 export const metadata: Metadata = {
     title: "Ha vinfast - Admin",
     description: "Ha vinfast - Admin",
+    robots: {
+        index: false,
+        follow: false,
+        noarchive: true,
+        nosnippet: true,
+        noimageindex: true,
+        nocache: true,
+    },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

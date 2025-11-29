@@ -13,6 +13,7 @@ export const metadata: Metadata = {
         type: "website",
     },
 };
+export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
     const aboutData = await fetchAboutData();
