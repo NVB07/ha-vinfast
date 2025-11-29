@@ -7,11 +7,15 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 // 内容管理数据类型
 export interface ContentData {
     poster: string; // URL ảnh
-    subTitle: string;
+    subtitle: string; // Subtitle cho banner (map với subTitle trong Firestore)
+    subTitle?: string; // Alias cho subtitle (backward compatibility)
     subtitleSlide: string;
     title: string;
     titleSlide: string;
+    titleOutstanding: string;
+    subtitleOutstanding: string;
     video: string; // URL video
+    rightImage?: string; // Ảnh phải (optional)
 }
 
 // 车辆详情类型

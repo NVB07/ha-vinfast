@@ -12,7 +12,7 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                 <p className="text-gray-600 dark:text-gray-400 mt-2">Quản lý nội dung website và thông tin xe</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card>
                     <CardBody className="p-6">
                         <h2 className="text-xl font-bold mb-2">Quản lý nội dung</h2>
@@ -29,6 +29,36 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                         <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý thông tin và danh sách xe</p>
                         <Button as={Link} href="/admin/cars" color="primary" fullWidth>
                             Đi đến quản lý xe
+                        </Button>
+                    </CardBody>
+                </Card>
+
+                <Card>
+                    <CardBody className="p-6">
+                        <h2 className="text-xl font-bold mb-2">Quản lý Footer</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý thông tin footer và liên hệ</p>
+                        <Button as={Link} href="/admin/footer" color="primary" fullWidth>
+                            Đi đến quản lý Footer
+                        </Button>
+                    </CardBody>
+                </Card>
+
+                <Card>
+                    <CardBody className="p-6">
+                        <h2 className="text-xl font-bold mb-2">Quản lý About</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý nội dung trang Về chúng tôi</p>
+                        <Button as={Link} href="/admin/about" color="primary" fullWidth>
+                            Đi đến quản lý About
+                        </Button>
+                    </CardBody>
+                </Card>
+
+                <Card>
+                    <CardBody className="p-6">
+                        <h2 className="text-xl font-bold mb-2">Quản lý Liên hệ</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý nội dung trang Liên hệ</p>
+                        <Button as={Link} href="/admin/contact" color="primary" fullWidth>
+                            Đi đến quản lý Liên hệ
                         </Button>
                     </CardBody>
                 </Card>

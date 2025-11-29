@@ -13,10 +13,12 @@ import { uploadToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl } from
 export function ContentManagement() {
     const [contentData, setContentData] = useState<ContentData>({
         poster: "",
-        subTitle: "",
+        subtitle: "",
         subtitleSlide: "",
         title: "",
         titleSlide: "",
+        titleOutstanding: "",
+        subtitleOutstanding: "",
         video: "",
     });
     const [oldPosterPublicId, setOldPosterPublicId] = useState<string | null>(null);
@@ -40,10 +42,12 @@ export function ContentManagement() {
                     const data = bannerSnap.data();
                     setContentData({
                         poster: data.poster || "",
-                        subTitle: data.subTitle || "",
+                        subtitle: data.subtitle || data.subTitle || "",
                         subtitleSlide: data.subtitleSlide || "",
                         title: data.title || "",
                         titleSlide: data.titleSlide || "",
+                        titleOutstanding: data.titleOutstanding || "",
+                        subtitleOutstanding: data.subtitleOutstanding || "",
                         video: data.video || "",
                     });
                     // Extract public IDs for old files
@@ -81,6 +85,12 @@ export function ContentManagement() {
         // Validate file type
         if (!file.type.startsWith("image/")) {
             alert("Vui lòng chọn file ảnh");
+            return;
+        }
+
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert("Kích thước file không được vượt quá 10MB");
             return;
         }
 
@@ -123,6 +133,12 @@ export function ContentManagement() {
             return;
         }
 
+        // Validate file size (max 100MB)
+        if (file.size > 100 * 1024 * 1024) {
+            alert("Kích thước file không được vượt quá 100MB");
+            return;
+        }
+
         try {
             setUploadingVideo(true);
 
@@ -156,7 +172,12 @@ export function ContentManagement() {
         try {
             setSaving(true);
             const bannerRef = doc(db, "home", "banner");
-            await setDoc(bannerRef, contentData, { merge: true });
+            // Map subtitle to subTitle for backward compatibility
+            const dataToSave = {
+                ...contentData,
+                subTitle: contentData.subtitle, // Keep both for compatibility
+            };
+            await setDoc(bannerRef, dataToSave, { merge: true });
             alert("Nội dung đã được lưu thành công!");
         } catch (error) {
             console.error("Lỗi khi lưu dữ liệu:", error);
@@ -178,133 +199,184 @@ export function ContentManagement() {
         <div className="space-y-6">
             <Card>
                 <CardHeader className="pb-3">
-                    <h2 className="text-2xl font-bold">Quản lý nội dung</h2>
+                    <h2 className="text-2xl font-bold">Quản lý nội dung trang chủ</h2>
                 </CardHeader>
-                <CardBody className="space-y-6">
-                    {/* Poster Upload */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Poster (Ảnh)</label>
-                        <div className="flex gap-2 items-center">
-                            <input ref={posterInputRef} type="file" accept="image/*" onChange={handlePosterUpload} className="hidden" disabled={uploadingPoster} />
-                            <Button color="primary" variant="flat" onPress={() => posterInputRef.current?.click()} isLoading={uploadingPoster} disabled={uploadingPoster}>
-                                {uploadingPoster ? "Đang tải..." : "Chọn ảnh"}
-                            </Button>
+                <CardBody className="space-y-8">
+                    {/* Banner Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b pb-2">Banner chính</h3>
+
+                        {/* Poster Upload */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Poster (Ảnh nền)</label>
+                            <div className="flex gap-2 items-center">
+                                <input ref={posterInputRef} type="file" accept="image/*" onChange={handlePosterUpload} className="hidden" disabled={uploadingPoster} />
+                                <Button
+                                    color="primary"
+                                    variant="flat"
+                                    onPress={() => posterInputRef.current?.click()}
+                                    isLoading={uploadingPoster}
+                                    disabled={uploadingPoster}
+                                >
+                                    {uploadingPoster ? "Đang tải..." : "Chọn ảnh"}
+                                </Button>
+                                {contentData.poster && (
+                                    <Button
+                                        color="danger"
+                                        variant="flat"
+                                        size="sm"
+                                        onPress={() => {
+                                            setContentData((prev) => ({ ...prev, poster: "" }));
+                                            setOldPosterPublicId(null);
+                                        }}
+                                    >
+                                        Xóa ảnh
+                                    </Button>
+                                )}
+                            </div>
                             {contentData.poster && (
-                                <Button
-                                    color="danger"
-                                    variant="flat"
-                                    size="sm"
-                                    onPress={() => {
-                                        setContentData((prev) => ({ ...prev, poster: "" }));
-                                        setOldPosterPublicId(null);
-                                    }}
-                                >
-                                    Xóa ảnh
-                                </Button>
+                                <div className="mt-2">
+                                    <img
+                                        src={contentData.poster}
+                                        alt="Poster preview"
+                                        className="max-w-md rounded-lg border border-gray-300 shadow-sm"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = "none";
+                                        }}
+                                    />
+                                </div>
                             )}
                         </div>
-                        {contentData.poster && (
-                            <div className="mt-2">
-                                <img
-                                    src={contentData.poster}
-                                    alt="Poster preview"
-                                    className="max-w-xs rounded-lg border border-gray-300"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = "none";
-                                    }}
-                                />
+
+                        {/* Video Upload */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Video</label>
+                            <div className="flex gap-2 items-center">
+                                <input ref={videoInputRef} type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" disabled={uploadingVideo} />
+                                <Button
+                                    color="primary"
+                                    variant="flat"
+                                    onPress={() => videoInputRef.current?.click()}
+                                    isLoading={uploadingVideo}
+                                    disabled={uploadingVideo}
+                                >
+                                    {uploadingVideo ? "Đang tải..." : "Chọn video"}
+                                </Button>
+                                {contentData.video && (
+                                    <Button
+                                        color="danger"
+                                        variant="flat"
+                                        size="sm"
+                                        onPress={() => {
+                                            setContentData((prev) => ({ ...prev, video: "" }));
+                                            setOldVideoPublicId(null);
+                                        }}
+                                    >
+                                        Xóa video
+                                    </Button>
+                                )}
                             </div>
-                        )}
-                    </div>
-
-                    {/* Title */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-                        <Input
-                            type="text"
-                            placeholder="Nhập tiêu đề"
-                            value={contentData.title}
-                            onChange={(e) => handleInputChange("title", e.target.value)}
-                            variant="bordered"
-                        />
-                    </div>
-
-                    {/* SubTitle */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">SubTitle</label>
-                        <Input
-                            type="text"
-                            placeholder="Nhập phụ đề"
-                            value={contentData.subTitle}
-                            onChange={(e) => handleInputChange("subTitle", e.target.value)}
-                            variant="bordered"
-                        />
-                    </div>
-
-                    {/* Title Slide */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Title Slide</label>
-                        <Input
-                            type="text"
-                            placeholder="Nhập tiêu đề slide"
-                            value={contentData.titleSlide}
-                            onChange={(e) => handleInputChange("titleSlide", e.target.value)}
-                            variant="bordered"
-                        />
-                    </div>
-
-                    {/* Subtitle Slide */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Subtitle Slide</label>
-                        <Input
-                            type="text"
-                            placeholder="Nhập phụ đề slide"
-                            value={contentData.subtitleSlide}
-                            onChange={(e) => handleInputChange("subtitleSlide", e.target.value)}
-                            variant="bordered"
-                        />
-                    </div>
-
-                    {/* Video Upload */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Video</label>
-                        <div className="flex gap-2 items-center">
-                            <input ref={videoInputRef} type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" disabled={uploadingVideo} />
-                            <Button color="primary" variant="flat" onPress={() => videoInputRef.current?.click()} isLoading={uploadingVideo} disabled={uploadingVideo}>
-                                {uploadingVideo ? "Đang tải..." : "Chọn video"}
-                            </Button>
                             {contentData.video && (
-                                <Button
-                                    color="danger"
-                                    variant="flat"
-                                    size="sm"
-                                    onPress={() => {
-                                        setContentData((prev) => ({ ...prev, video: "" }));
-                                        setOldVideoPublicId(null);
-                                    }}
-                                >
-                                    Xóa video
-                                </Button>
+                                <div className="mt-2">
+                                    <video
+                                        src={contentData.video}
+                                        controls
+                                        className="max-w-md rounded-lg border border-gray-300 shadow-sm"
+                                        onError={(e) => {
+                                            (e.target as HTMLVideoElement).style.display = "none";
+                                        }}
+                                    />
+                                </div>
                             )}
                         </div>
-                        {contentData.video && (
-                            <div className="mt-2">
-                                <video
-                                    src={contentData.video}
-                                    controls
-                                    className="max-w-xs rounded-lg border border-gray-300"
-                                    onError={(e) => {
-                                        (e.target as HTMLVideoElement).style.display = "none";
-                                    }}
-                                />
-                            </div>
-                        )}
+
+                        {/* Title */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tiêu đề banner</label>
+                            <Input
+                                type="text"
+                                placeholder="Nhập tiêu đề banner"
+                                value={contentData.title}
+                                onChange={(e) => handleInputChange("title", e.target.value)}
+                                variant="bordered"
+                            />
+                        </div>
+
+                        {/* SubTitle */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Phụ đề banner</label>
+                            <Input
+                                type="text"
+                                placeholder="Nhập phụ đề banner"
+                                value={contentData.subtitle}
+                                onChange={(e) => handleInputChange("subtitle", e.target.value)}
+                                variant="bordered"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Slider Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b pb-2">Phần slider</h3>
+
+                        {/* Title Slide */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tiêu đề slider</label>
+                            <Input
+                                type="text"
+                                placeholder="Nhập tiêu đề slider"
+                                value={contentData.titleSlide}
+                                onChange={(e) => handleInputChange("titleSlide", e.target.value)}
+                                variant="bordered"
+                            />
+                        </div>
+
+                        {/* Subtitle Slide */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Phụ đề slider</label>
+                            <Input
+                                type="text"
+                                placeholder="Nhập phụ đề slider"
+                                value={contentData.subtitleSlide}
+                                onChange={(e) => handleInputChange("subtitleSlide", e.target.value)}
+                                variant="bordered"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Outstanding Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 border-b pb-2">Phần xe nổi bật</h3>
+
+                        {/* Title Outstanding */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tiêu đề xe nổi bật</label>
+                            <Input
+                                type="text"
+                                placeholder="Nhập tiêu đề phần xe nổi bật"
+                                value={contentData.titleOutstanding}
+                                onChange={(e) => handleInputChange("titleOutstanding", e.target.value)}
+                                variant="bordered"
+                            />
+                        </div>
+
+                        {/* Subtitle Outstanding */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Phụ đề xe nổi bật</label>
+                            <Input
+                                type="text"
+                                placeholder="Nhập phụ đề phần xe nổi bật"
+                                value={contentData.subtitleOutstanding}
+                                onChange={(e) => handleInputChange("subtitleOutstanding", e.target.value)}
+                                variant="bordered"
+                            />
+                        </div>
                     </div>
 
                     {/* Save Button */}
-                    <div className="flex justify-end pt-4">
-                        <Button color="primary" onClick={handleSave} className="min-w-24" isLoading={saving} disabled={saving}>
-                            {saving ? "Đang lưu..." : "Lưu"}
+                    <div className="flex justify-end pt-4 border-t">
+                        <Button color="primary" onClick={handleSave} className="min-w-32" isLoading={saving} disabled={saving}>
+                            {saving ? "Đang lưu..." : "Lưu thay đổi"}
                         </Button>
                     </div>
                 </CardBody>

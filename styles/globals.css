@@ -57,11 +57,62 @@
     color: #000;
 }
 
-/* Ẩn nút mũi tên khi màn hình ≤ 1024px */
+/* Ẩn nút mũi tên khi màn hình ≤ 1024px (chỉ áp dụng cho slider khác, không áp dụng cho model-detail-slider) */
 @media (max-width: 1024px) {
     .slick-prev,
     .slick-next {
         display: none !important;
+    }
+}
+
+/* Model Detail Slider - Luôn hiển thị arrows và dots (override rule trên) */
+.model-detail-slider .slick-prev,
+.model-detail-slider .slick-next {
+    display: block !important;
+    z-index: 2;
+}
+
+.model-detail-slider .slick-prev {
+    left: 10px;
+}
+
+.model-detail-slider .slick-next {
+    right: 10px;
+}
+
+.model-detail-slider .slick-prev:before,
+.model-detail-slider .slick-next:before {
+    color: #000;
+    font-size: 30px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .model-detail-slider .slick-prev:before,
+    .model-detail-slider .slick-next:before {
+        color: #fff;
+    }
+}
+
+.model-detail-slider .slick-dots {
+    bottom: 20px;
+    position: absolute;
+}
+
+.model-detail-slider .slick-dots li button:before {
+    font-size: 12px;
+    color: #999;
+}
+
+.model-detail-slider .slick-dots li.slick-active button:before {
+    color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+    .model-detail-slider .slick-dots li button:before {
+        color: #ccc;
+    }
+    .model-detail-slider .slick-dots li.slick-active button:before {
+        color: #fff;
     }
 }
 

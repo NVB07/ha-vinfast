@@ -10,7 +10,7 @@ export const siteConfig = {
         },
         {
             label: "Các mẫu xe",
-            href: "/docs",
+            href: "/models",
         },
 
         {
@@ -19,7 +19,7 @@ export const siteConfig = {
         },
         {
             label: "Liên hệ",
-            href: "/blog",
+            href: "/contact",
         },
     ],
     navMenuItems: [

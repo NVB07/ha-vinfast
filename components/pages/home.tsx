@@ -1,86 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getDoc, collection, doc, query, where, getDocs } from "firebase/firestore";
-import { db } from "@/config/firebase";
 import Slider from "react-slick";
 import { CarData } from "@/types";
+import { BannerData } from "@/lib/firebase-data";
 
-interface BannerData {
-    video: string;
-    poster: string;
-    title: string;
-    subtitle: string;
-    titleSlide: string;
-    subtitleSlide: string;
-    titleOutstanding: string;
-    subtitleOutstanding: string;
+interface HomePageProps {
+    data: BannerData | null;
+    slideData: CarData[];
+    outstandingData: CarData[];
 }
 
-const HomePage: React.FC = () => {
-    const [data, setData] = useState<BannerData | null>(null);
+const HomePage: React.FC<HomePageProps> = ({ data, slideData, outstandingData }) => {
     const [windowWidth, setWindowWidth] = useState<number>(0);
-    const [sildeData, setSlideData] = useState<CarData[]>();
-    const [outstandingData, setOutstandingData] = useState<CarData[]>([]);
-
-    const fetchPinnedModels = async () => {
-        const colRef = collection(db, "allModels");
-
-        const q = query(colRef, where("pinSlider", "==", true));
-
-        const querySnap = await getDocs(q);
-
-        const results: any[] = [];
-
-        querySnap.forEach((doc) => {
-            results.push({
-                ...doc.data(),
-                id: doc.id,
-            });
-        });
-
-        return results;
-    };
-
-    const fetchOutstandingModels = async () => {
-        const colRef = collection(db, "allModels");
-
-        const q = query(colRef, where("pinOutstanding", "==", true));
-
-        const querySnap = await getDocs(q);
-
-        const results: any[] = [];
-
-        querySnap.forEach((doc) => {
-            results.push({
-                ...doc.data(),
-                id: doc.id,
-            });
-        });
-
-        return results;
-    };
-
-    const fetchHomeData = async () => {
-        const docRef = doc(db, "home", "banner"); // "home" là collection, "banner" là ID document
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            console.log("Data:", docSnap.data());
-            setData(docSnap.data() as BannerData);
-        } else {
-            console.log("Không tìm thấy document 'banner'");
-        }
-    };
-
-    useEffect(() => {
-        const load = async () => {
-            const [homeData, pinned, outstanding] = await Promise.all([fetchHomeData(), fetchPinnedModels(), fetchOutstandingModels()]);
-            setSlideData(pinned);
-            setOutstandingData(outstanding);
-        };
-
-        load();
-    }, [db]);
 
     // Detect window width
     useEffect(() => {
@@ -173,7 +104,7 @@ const HomePage: React.FC = () => {
                         {(() => {
                             // 如果数据少于6个，则重复数据直到至少有6个
                             const minItems = 6;
-                            const dataArray = sildeData || [];
+                            const dataArray = slideData || [];
                             let expandedData = [...dataArray];
 
                             if (dataArray.length > 0 && dataArray.length < minItems) {
@@ -246,7 +177,7 @@ const HomePage: React.FC = () => {
                         </div>
                         <div className="order-1 lg:order-2">
                             <div className="relative">
-                                <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                                <div className="aspect-[4/3] bg-[] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center bg-[linear-gradient(to_bottom,rgba(0,0,0,0.5),rgba(0,0,0,0.8)),url('https://vinfastvietnam.com.vn/wp-content/uploads/2024/08/bannervinfastvietnam.jpg')] bg-cover bg-center">
                                     <div className="text-center p-8">
                                         <svg className="w-24 h-24 mx-auto text-white mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -317,7 +248,7 @@ const HomePage: React.FC = () => {
                                 </svg>
                             </div>
                             <h3 className="text-xl font-semibold mb-2">Công nghệ hiện đại</h3>
-                            <p className="text-gray-600 text-sm">Công nghệ tiên tiến, tích hợp AI và kết nối thông minh</p>
+                            <p className="text-gray-600 text-sm">Công nghệ tiên tiến và kết nối thông minh</p>
                         </div>
                         <div className="flex flex-col items-center text-center p-6 rounded-lg hover:bg-gray-50 transition-colors">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -369,7 +300,7 @@ const HomePage: React.FC = () => {
                             <div className="text-sm sm:text-base text-blue-100">Khách hàng tin dùng</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">50+</div>
+                            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">10+</div>
                             <div className="text-sm sm:text-base text-blue-100">Mẫu xe đa dạng</div>
                         </div>
                         <div className="text-center">
@@ -388,14 +319,14 @@ const HomePage: React.FC = () => {
             <div className="w-full py-10 sm:py-16 lg:py-20 bg-gray-50">
                 <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Sẵn sàng trải nghiệm VinFast?</h2>
-                    <p className="text-gray-600 mb-8 text-lg">Đặt lịch lái thử ngay hôm nay và khám phá những điều tuyệt vời từ VinFast</p>
+                    <p className="text-gray-600 mb-8 text-lg">Khám phá những điều tuyệt vời từ VinFast</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a
+                        {/* <a
                             href="/contact"
                             className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
                         >
                             Đặt lịch lái thử
-                        </a>
+                        </a> */}
                         <a
                             href="/models"
                             className="px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
