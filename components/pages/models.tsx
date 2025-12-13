@@ -197,9 +197,11 @@ export function ModelsPage({ models }: ModelsPageProps) {
 
                                             {/* Buttons */}
                                             <div className="flex gap-3 mt-auto">
-                                                <Button as={Link} href={`/models/${model.id}`} color="primary" className="flex-1">
-                                                    Xem chi tiết
-                                                </Button>
+                                                <Link href={`/models/${model.id}`} className="flex-1">
+                                                    <Button color="primary" className="w-full">
+                                                        Xem chi tiết
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </CardBody>

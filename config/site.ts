@@ -3,7 +3,7 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
     name: "Vinfast",
     description: "Thương hiệu xe điện hàng đầu Việt Nam với công nghệ tiên tiến, thiết kế hiện đại và giá cả hợp lý.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://vinfast-hanoi.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://havinfast.vercel.app",
     navItems: [
         {
             label: "Trang chủ",

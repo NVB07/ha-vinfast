@@ -17,9 +17,11 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                     <CardBody className="p-6">
                         <h2 className="text-xl font-bold mb-2">Quản lý nội dung</h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý banner và nội dung trang chủ</p>
-                        <Button as={Link} href="/admin/content" color="primary" fullWidth>
-                            Đi đến quản lý nội dung
-                        </Button>
+                        <Link href="/admin/content">
+                            <Button color="primary" fullWidth>
+                                Đi đến quản lý nội dung
+                            </Button>
+                        </Link>
                     </CardBody>
                 </Card>
 
@@ -27,9 +29,11 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                     <CardBody className="p-6">
                         <h2 className="text-xl font-bold mb-2">Quản lý xe</h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý thông tin và danh sách xe</p>
-                        <Button as={Link} href="/admin/cars" color="primary" fullWidth>
-                            Đi đến quản lý xe
-                        </Button>
+                        <Link href="/admin/cars">
+                            <Button color="primary" fullWidth>
+                                Đi đến quản lý xe
+                            </Button>
+                        </Link>
                     </CardBody>
                 </Card>
 
@@ -37,9 +41,11 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                     <CardBody className="p-6">
                         <h2 className="text-xl font-bold mb-2">Quản lý Footer</h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý thông tin footer và liên hệ</p>
-                        <Button as={Link} href="/admin/footer" color="primary" fullWidth>
-                            Đi đến quản lý Footer
-                        </Button>
+                        <Link href="/admin/footer">
+                            <Button color="primary" fullWidth>
+                                Đi đến quản lý Footer
+                            </Button>
+                        </Link>
                     </CardBody>
                 </Card>
 
@@ -47,9 +53,11 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                     <CardBody className="p-6">
                         <h2 className="text-xl font-bold mb-2">Quản lý About</h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý nội dung trang Về chúng tôi</p>
-                        <Button as={Link} href="/admin/about" color="primary" fullWidth>
-                            Đi đến quản lý About
-                        </Button>
+                        <Link href="/admin/about">
+                            <Button color="primary" fullWidth>
+                                Đi đến quản lý About
+                            </Button>
+                        </Link>
                     </CardBody>
                 </Card>
 
@@ -57,9 +65,11 @@ const ADMIN_PAGE: React.FC<{}> = () => {
                     <CardBody className="p-6">
                         <h2 className="text-xl font-bold mb-2">Quản lý Liên hệ</h2>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">Quản lý nội dung trang Liên hệ</p>
-                        <Button as={Link} href="/admin/contact" color="primary" fullWidth>
-                            Đi đến quản lý Liên hệ
-                        </Button>
+                        <Link href="/admin/contact">
+                            <Button color="primary" fullWidth>
+                                Đi đến quản lý Liên hệ
+                            </Button>
+                        </Link>
                     </CardBody>
                 </Card>
             </div>
